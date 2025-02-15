@@ -1,20 +1,22 @@
 const { default: mongoose } = require("mongoose");
 
-const dbModel = new mongoose.Schema(
+const dbModel = mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
-      unique: true,
+      require: [true, "name is required"],
+      trim: true,
     },
     email: {
       type: String,
       require: true,
       unique: true,
+      trim: true,
     },
     password: {
       type: String,
       require: true,
+      trim: true,
     },
     OTP: {
       type: String,
@@ -27,6 +29,11 @@ const dbModel = new mongoose.Schema(
     },
     adderss: {
       type: String,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
   },
   {
