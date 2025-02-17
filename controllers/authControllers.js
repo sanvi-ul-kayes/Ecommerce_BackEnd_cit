@@ -1,6 +1,7 @@
 const dbModel = require("../dbModel/dbModel");
 const vailatedEmail = require("../helpers/vailatedEmail");
 const bcrypt = require("bcrypt");
+var jwt = require("jsonwebtoken");
 
 //localhost:9090/api/v1/auth/registration
 async function registrationController(req, res) {
@@ -40,18 +41,27 @@ async function registrationController(req, res) {
 async function loginController(req, res) {
   let { email, password } = req.body;
   let existingUser = await dbModel.findOne({ email });
+
   if (existingUser) {
-    bcrypt.compare(password, existingUser.password, function (err, result) {
-      if (result == true) {
-        res
-          .status(200)
-          .send({ success: "Login Successful", data: existingUser });
-      } else {
-        res.status(404).send({ Error: "Invalid Password" });
+    bcrypt.compare(
+      password,
+      existingUser.password,
+      async function (err, result) {
+        if (result == true) {
+          let info = await dbModel.findOne({ email }).select("-password");
+          const token = jwt.sign({ info }, process.env.SECRET_KEY, {
+            expiresIn: "1d",
+          });
+          res
+            .status(200)
+            .send({ success: "Login Successful", data: existingUser, token });
+        } else {
+          res.status(404).send({ Error: "Invalid Credantial" });
+        }
       }
-    });
+    );
   } else {
-    res.status(404).send({ Error: "Invalid Email" });
+    res.status(404).send({ err: "Invalid Credantial" });
   }
 }
 
