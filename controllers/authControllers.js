@@ -48,13 +48,47 @@ async function loginController(req, res) {
       existingUser.password,
       async function (err, result) {
         if (result == true) {
-          let info = await dbModel.findOne({ email }).select("-password");
-          const token = jwt.sign({ info }, process.env.SECRET_KEY, {
-            expiresIn: "1d",
-          });
-          res
-            .status(200)
-            .send({ success: "Login Successful", data: existingUser, token });
+          // let info = await dbModel.findOne({ email }).select("-password");[in order to delete a value we can use select()]
+
+          if (existingUser.role == "user") {
+            let userInfo = {
+              name: existingUser.name,
+              id: existingUser._id,
+              email: existingUser.email,
+              role: existingUser.role,
+            };
+            const token = jwt.sign({ userInfo }, process.env.SECRET_KEY, {
+              expiresIn: "1d",
+            });
+            res.cookie("token", token, {
+              httpOnly: true,
+              secure: false,
+            });
+            res.status(200).send({
+              success: "User Login Successful",
+              data: userInfo,
+              token,
+            });
+          } else if (existingUser.role == "admin") {
+            let userInfo = {
+              name: existingUser.name,
+              id: existingUser._id,
+              email: existingUser.email,
+              role: existingUser.role,
+            };
+            const token = jwt.sign({ userInfo }, process.env.SECRET_KEY, {
+              expiresIn: "1d",
+            });
+            res.cookie("token", token, {
+              httpOnly: true,
+              secure: false,
+            });
+            res.status(200).send({
+              success: "Admin Login Successful",
+              data: userInfo,
+              token,
+            });
+          }
         } else {
           res.status(404).send({ Error: "Invalid Credantial" });
         }

@@ -1,11 +1,13 @@
 const express = require("express");
 require("dotenv").config();
 const app = express();
+const cookieParser = require("cookie-parser");
 const router = require("./Router");
 const dbConnect = require("./config/dbConfig");
 dbConnect();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 //localhost:9090/home
 app.use(router);
 
