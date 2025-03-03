@@ -1,4 +1,5 @@
 const dbModel = require("../dbModel/dbModel");
+const sendEmail = require("../helpers/sendEmail");
 const vailatedEmail = require("../helpers/vailatedEmail");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
@@ -26,8 +27,21 @@ async function registrationController(req, res) {
             password: hash,
             role,
           });
-
           await user.save();
+          let OTP = await dbModel.findOneAndUpdate(
+            { email },
+            { $set: { OTP: "1234" } },
+            { new: true }
+          );
+          setTimeout(async () => {
+            let OTP = await dbModel.findOneAndUpdate(
+              { email },
+              { $set: { OTP: null } },
+              { new: true }
+            );
+          }, [60 * 60]);
+
+          sendEmail(email);
           res.status(200).send({ user });
         } catch (error) {
           res.status(500).send({ error });
@@ -48,7 +62,7 @@ async function loginController(req, res) {
       existingUser.password,
       async function (err, result) {
         if (result == true) {
-          // let info = await dbModel.findOne({ email }).select("-password");[in order to delete a value we can use select()]
+          // let info = await dbModel.findOne({ email }).select("-password");[in order to select we can use select()(& to delete a value we can simply give a - before the value's name]
 
           if (existingUser.role == "user") {
             let userInfo = {

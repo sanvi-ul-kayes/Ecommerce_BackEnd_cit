@@ -30,6 +30,10 @@ const dbModel = mongoose.Schema(
     adderss: {
       type: String,
     },
+    isVarify: {
+      type: Boolean,
+      default: false,
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
