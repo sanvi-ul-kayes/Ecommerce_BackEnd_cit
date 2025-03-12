@@ -45,4 +45,4 @@ const dbModel = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("four", dbModel);
+module.exports = mongoose.model("Ecommerce", dbModel);

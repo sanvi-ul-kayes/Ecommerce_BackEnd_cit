@@ -14,4 +14,4 @@
 <h5>localhost:9090/api/v1/auth/user</h5><br>
 <h2>Class:06</h2>
 <p>NodeMailer, generating OTP, sending OTP, Send a mail,<br> Hand Coded OTP with duration using setTimeOut</p>
-h2
+<h2>Class:07</h2><br><p>creating Category, category model ,Upload Images </p>
