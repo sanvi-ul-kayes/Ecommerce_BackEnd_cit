@@ -15,3 +15,8 @@
 <h2>Class:06</h2>
 <p>NodeMailer, generating OTP, sending OTP, Send a mail,<br> Hand Coded OTP with duration using setTimeOut</p>
 <h2>Class:07</h2><br><p>creating Category, category model ,Upload Images </p>
+<h2>class:08</h2><p>TOPICS:Multer Limits,<br>Errorcheck for checking any problem,<br> for using static file used express.static()<br>OTP_verify<br>OTP_resend</p><br>
+<p>otp_varify Route:</p><br>
+<h5>localhost:9090/api/v1/auth/otp_varify</h5><br>
+<p>otp_resend Route:</p><br>
+<h5>localhost:9090/api/v1/auth/otp_resend</h5>

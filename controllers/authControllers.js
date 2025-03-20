@@ -3,6 +3,11 @@ const sendEmail = require("../helpers/sendEmail");
 const vailatedEmail = require("../helpers/vailatedEmail");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
+const otpGenerator = require("otp-generator");
+const otp = otpGenerator.generate(6, {
+  upperCaseAlphabets: false,
+  specialChars: false,
+});
 
 //localhost:9090/api/v1/auth/registration
 async function registrationController(req, res) {
@@ -30,7 +35,7 @@ async function registrationController(req, res) {
           await user.save();
           let OTP = await dbModel.findOneAndUpdate(
             { email },
-            { $set: { OTP: "1234" } },
+            { $set: { OTP: otp } },
             { new: true }
           );
           setTimeout(async () => {
@@ -39,7 +44,7 @@ async function registrationController(req, res) {
               { $set: { OTP: null } },
               { new: true }
             );
-          }, [60 * 60]);
+          }, 10000);
 
           sendEmail(email);
           res.status(200).send({ user });
@@ -113,4 +118,44 @@ async function loginController(req, res) {
   }
 }
 
-module.exports = { registrationController, loginController };
+//localhost:9090/api/v1/auth/otp_varify
+async function otpVarifyController(req, res) {
+  let { email, otp } = req.body;
+  const existingUser = await dbModel.findOne({ email });
+  if (existingUser) {
+    if (existingUser.OTP == otp) {
+      existingUser.isVarify = true;
+      await existingUser.save();
+      res.status(200).send({ msg: "OTP is varified", existingUser });
+    } else {
+      res.status(404).send("Invalid OTP");
+    }
+  } else {
+    res.status(404).send("User Not Found");
+  }
+}
+
+//localhost:9090/api/v1/auth/otp_resend
+async function resendOtpController(req, res) {
+  let { email } = req.body;
+  const existingUser = await dbModel.findOne({ email });
+  if (existingUser) {
+    existingUser.OTP = otp;
+    await existingUser.save();
+    setTimeout(async () => {
+      existingUser.OTP = null;
+      await existingUser.save();
+    }, 10000);
+    sendEmail({ email, otp });
+    res.status(200).send({ msg: "OTP Re_send successful", existingUser });
+  } else {
+    res.status(404).send("user Not found");
+  }
+}
+
+module.exports = {
+  registrationController,
+  loginController,
+  otpVarifyController,
+  resendOtpController,
+};

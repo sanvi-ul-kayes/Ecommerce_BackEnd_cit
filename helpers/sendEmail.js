@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-async function sendEmail(email) {
+async function sendEmail({ email, otp }) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -17,7 +17,7 @@ async function sendEmail(email) {
           src="https://i.ibb.co.com/NnfLmwvp/elegant-letter-k-graceful-royal-style-calligraphic-beautiful-logo-vintage-drawn-emblem-book-design-b.webp"
           alt="" 
         />
-        <h4>you otp code is 2314</h4>
+        <h4>you otp code is ${otp}</h4>
       </div>`,
   });
 }
