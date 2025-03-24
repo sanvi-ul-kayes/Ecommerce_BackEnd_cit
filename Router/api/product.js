@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const createCategory = require("../../controllers/categoryController");
+const productController = require("../../controllers/productController");
 const multer = require("multer");
 let mimetype = new Set(["image/jpeg", "image/jpg", "image/png", "image/gif"]);
 
@@ -41,12 +41,7 @@ function errorCheck(err, req, res, next) {
   }
 }
 
-//localhost:9090/api/v1/category/createCategory
-router.post(
-  "/createCategory",
-  upload.single("image"),
-  createCategory,
-  errorCheck
-);
+//localhost:9090/api/v1/product/addProduct
+router.post("/addProduct", upload.array("image"), productController);
 
 module.exports = router;

@@ -20,3 +20,4 @@
 <h5>localhost:9090/api/v1/auth/otp_varify</h5><br>
 <p>otp_resend Route:</p><br>
 <h5>localhost:9090/api/v1/auth/otp_resend</h5>
+<h2>Class:09</h2><br><p>Creating Product Model, Product Controller, Product </p><br><h3>Product Route:</h3><h4>localhost:9090/api/v1/product/addProduct</h4>
