@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const createCategory = require("../../controllers/categoryController");
+const {
+  createCategory,
+  deleteCategoryController,
+} = require("../../controllers/categoryController");
 const multer = require("multer");
 let mimetype = new Set(["image/jpeg", "image/jpg", "image/png", "image/gif"]);
 
@@ -46,6 +49,14 @@ router.post(
   "/createCategory",
   upload.single("image"),
   createCategory,
+  errorCheck
+);
+
+//localhost:9090/api/v1/category/deleteCategory
+router.delete(
+  "/deleteCategory/:id",
+  upload.single("image"),
+  deleteCategoryController,
   errorCheck
 );
 
