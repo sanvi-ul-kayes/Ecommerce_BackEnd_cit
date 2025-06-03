@@ -22,3 +22,4 @@
 <h5>localhost:9090/api/v1/auth/otp_resend</h5>
 <h2>Class:09</h2><br><p>Creating Product Model, Product Controller, Product </p><br><h3>Product Route:</h3><h4>localhost:9090/api/v1/product/addProduct</h4><br>
 <h1>class:11</h1><br><P>Delete Category</P><br><h2>Delete category route:</h2><br><h4>localhost:9090/api/v1/category/deleteCategory</h4>
+<h1>class:12</h1><br><p>Delete Product Update categtory</p><br><h2>Update Category route:</h2><h4>localhost:9090/api/v1/category/updateCategory</h4><br><h2>Delete Product ROute:</h2><br><h4>localhost:9090/api/v1/product/deleteProduct</h4>

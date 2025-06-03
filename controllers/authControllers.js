@@ -1,5 +1,5 @@
 const dbModel = require("../dbModel/dbModel");
-const sendEmail = require("../helpers/sendEmail");
+// const sendEmail = require("../helpers/sendEmail");
 const vailatedEmail = require("../helpers/vailatedEmail");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
@@ -46,8 +46,12 @@ async function registrationController(req, res) {
             );
           }, 10000);
 
-          sendEmail(email);
-          res.status(200).send({ user });
+          // sendEmail(email);
+          res.status(200).send({
+            success: true,
+            Msg: "Registration completed",
+            data: user,
+          });
         } catch (error) {
           res.status(500).send({ error });
         }
@@ -126,12 +130,12 @@ async function otpVarifyController(req, res) {
     if (existingUser.OTP == otp) {
       existingUser.isVarify = true;
       await existingUser.save();
-      res.status(200).send({ msg: "OTP is varified", existingUser });
+      res.status(200).send({ msg: "OTP is varified", Data: existingUser });
     } else {
       res.status(404).send("Invalid OTP");
     }
   } else {
-    res.status(404).send("User Not Found");
+    res.status(404).send("OTP Not Found");
   }
 }
 
@@ -146,7 +150,7 @@ async function resendOtpController(req, res) {
       existingUser.OTP = null;
       await existingUser.save();
     }, 10000);
-    sendEmail({ email, otp });
+    // sendEmail({ email, otp });
     res.status(200).send({ msg: "OTP Re_send successful", existingUser });
   } else {
     res.status(404).send("user Not found");
