@@ -18,6 +18,44 @@ async function createCategory(req, res) {
   });
 }
 
+//localhost:9090/api/v1/category/updateCategory
+
+async function updateCategoryController(req, res) {
+  let { id } = req.params;
+  let { name, description } = req.body;
+  let newImage = req.file;
+  let { filename } = newImage;
+  try {
+    const updateCategory = await categoryModel.findOneAndUpdate(
+      { _id: id },
+      { name, description, image: process.env.HOST_URL + filename },
+      { new: true }
+    );
+
+    const oldImage = updateCategory.image.split("/").pop();
+
+    fs.unlink(`${path.join(__dirname, "../uploads")}/${oldImage}`, (err) => {
+      if (err) {
+        res.status(404).send({
+          success: false,
+          msg: err ? err.message : "Internal Server Error",
+        });
+        category.save();
+      } else {
+        res.status(200).send({
+          success: true,
+          msg: "Category is updated successful",
+          data: updateCategory,
+        });
+      }
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, msg: "Internal server Error", data: error });
+  }
+}
+
 //localhost:9090/api/v1/category/deleteCategory
 async function deleteCategoryController(req, res) {
   let { id } = req.params;
@@ -67,48 +105,6 @@ async function allCategoryController(req, res) {
         msg: "No Category",
       });
     }
-  } catch (error) {
-    res
-      .status(500)
-      .send({ success: false, msg: error ? error : "Internal Server Error" });
-  }
-}
-
-//localhost:9090/api/v1/category/updateCategory
-async function updateCategoryController(req, res) {
-  let { id } = req.params;
-  let { name, description } = req.body;
-  const image = req.file;
-  const { filename } = image;
-  try {
-    let category = await categoryModel.findOneAndUpdate(
-      { _id: id },
-      {
-        name,
-        description,
-        image: process.env.HOST_URL + filename,
-      }
-    );
-    let Categoryimage = category.image.split("/").pop();
-
-    fs.unlink(
-      `${path.join(__dirname, "../uploads")}/${Categoryimage}`,
-      (err) => {
-        if (err) {
-          res.status(404).send({
-            success: false,
-            msg: err ? err.message : "Internal Server Error",
-          });
-        } else {
-          res.status(200).send({
-            success: true,
-            msg: "Category is Updated successful",
-            data: category,
-          });
-          category.save();
-        }
-      }
-    );
   } catch (error) {
     res
       .status(500)

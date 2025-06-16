@@ -1,6 +1,7 @@
 const path = require("path");
 const productModel = require("../dbModel/productModel");
 const fs = require("fs");
+const categoryModel = require("../dbModel/categoryModel");
 
 //localhost:9090/api/v1/product/addProduct
 async function addproductController(req, res) {
@@ -31,6 +32,13 @@ async function addproductController(req, res) {
       category,
     });
     await product.save();
+
+    await categoryModel.findOneAndUpdate(
+      { _id: category },
+      { $push: { product: product._id } },
+      { new: true }
+    );
+
     res.status(201).send({
       success: true,
       msg: "Product is created successful",
@@ -40,6 +48,52 @@ async function addproductController(req, res) {
     res.status(500).send(err.message || err);
   }
 }
+
+// localhost:9090/api/v1/product/updateProduct
+async function updateProductController(req, res) {
+  let { id } = req.params;
+  try {
+    let { name, description } = req.body;
+
+    // requested product image or new product image
+    const images = req.files.map((item) => {
+      return `${process.env.HOST_URL + item.filename}`;
+    });
+
+    const updateProduct = await productModel.findOneAndUpdate(
+      { _id: id },
+      { name, description, image: images }
+    );
+
+    // old image
+    const productImageArray = updateProduct.image;
+    productImageArray.forEach((element) => {
+      const oldproductImageArray = element.split("/").pop();
+      fs.unlink(
+        `${path.join(__dirname, "../uploads")}/${oldproductImageArray}`,
+        (err) => {
+          if (err) {
+            res.status(404).send({
+              success: false,
+              msg: err ? err.message : "Internal Server Error",
+            });
+          } else {
+            res.status(200).send({
+              success: true,
+              msg: "Product is updated successful",
+              data: updateProduct,
+            });
+          }
+        }
+      );
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, msg: error ? error : "Internal Server Error" });
+  }
+}
+
 // localhost:9090/api/v1/product/deleteProduct
 async function deleteProductController(req, res) {
   let { id } = req.params;
@@ -68,43 +122,6 @@ async function deleteProductController(req, res) {
         }
       );
     });
-  } catch (error) {
-    res
-      .status(500)
-      .send({ success: false, msg: error ? error : "Internal Server Error" });
-  }
-}
-
-// localhost:9090/api/v1/product/updateProduct
-async function updateProductController(req, res) {
-  let { id } = req.params;
-  let {
-    name,
-    description,
-    discountPrice,
-    sellingPrice,
-    review,
-    rating,
-    stock,
-    category,
-    image,
-  } = req.body;
-  try {
-    const updateProduct = await productModel.findOne(
-      { _id: id },
-      {
-        name,
-        description,
-        discountPrice,
-        sellingPrice,
-        review,
-        rating,
-        stock,
-        category,
-        image,
-      }
-    );
-    res.send(updateProduct);
   } catch (error) {
     res
       .status(500)
